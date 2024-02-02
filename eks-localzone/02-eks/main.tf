@@ -76,7 +76,7 @@ module "eks" {
       name = "self-managed-ondemand"
       platform      = "bottlerocket"
       instance_type = "m5.large"
-      ami_id = "ami-0fc370be4e6093918"
+      ami_id = "ami-070f54df448b5ba72"
       min_size  = 1
       max_size  = 3
       block_device_mappings = [
