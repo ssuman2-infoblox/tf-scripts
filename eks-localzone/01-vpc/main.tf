@@ -8,7 +8,7 @@ locals {
 
   vpc_cidr     = var.vpc_cidr
   cluster_name = var.cluster_name
-  azs          = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  azs          = ["${local.region}a", "${local.region}b"]
   lzs          = var.lzs
 }
 
@@ -43,9 +43,6 @@ resource "aws_subnet" "public-subnet-lz" {
   cidr_block              = cidrsubnet(var.vpc_cidr, 8, 5)
   availability_zone       = local.lzs[0]
   map_public_ip_on_launch = true
-      #checkov:skip=CKV_AWS_130: The public subnet is for EKS nodes if the customer would like to, so auto-assign IPv4 public address is required 
-      # Link: https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
-      # If you plan to deploy nodes to a public subnet, the subnet must auto-assign IPv4 public addresses
   tags = merge(
     { "Name" = "${module.vpc.name}-public-${local.lzs[0]}" },
   )
@@ -69,4 +66,3 @@ resource "aws_route_table_association" "private-subnet-lz-rta" {
   subnet_id      = aws_subnet.private-subnet-lz.id
   route_table_id = module.vpc.private_route_table_ids[0]
 }
-

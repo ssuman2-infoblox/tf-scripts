@@ -1,0 +1,22 @@
+#cloud-config
+bootcmd:
+- sed -i '6i -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT' /etc/firewall.d/firewall.4.rules
+- systemctl restart firewalld.service
+- sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+- sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+- systemctl enable ssh
+- systemctl --no-block restart ssh
+- echo 'root:InfobloxAdmin@123' | chpasswd
+disable_root: false
+host_setup:
+  access_portal: env-2a.test.infoblox.com
+  jointoken: 8WFUwgmOU3xocLN3t4TezP96pabbaXp4bqq5cUYyw7SJ
+  config_server: cpnoa-env-2a.test.infoblox.com:443
+  notification_server: cpnoa-env-2a.test.infoblox.com:443
+  tags:
+    - source: "terraform-userdata"
+  haas:
+  - CNAME=mhtesttf0.managed.test.infoblox.com
+  - PSK=RhYhTLCr30CUikuWHdTP4f43CMNulhSD
+  - IPADDRESS=169.254.1.1
+  - ROUTES=
