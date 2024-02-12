@@ -7,16 +7,14 @@ data "aws_iam_instance_profile" "eks-access" {
 }
 
 resource "aws_instance" "sujay-tf-mh" {
-  ami           = var.ami
-  instance_type = var.instance_type
+  ami           = var.mh_ami
+  instance_type = var.mh_instance_type
   key_name      = var.key_name
-  subnet_id     = var.subnet_id
-  security_groups = var.security_groups
-  user_data = file("userdata.yaml")
+  subnet_id     = var.private_subnet_id
+  security_groups = var.mh_security_groups
+  user_data = file("mh-userdata.yaml")
   iam_instance_profile = data.aws_iam_instance_profile.eks-access.name
-  tags = {
-      Name = "sujay-tf-mh"
-  }
+  tags = var.mh_tags
 }
 
 resource "aws_eip" "mh-eip" {
@@ -40,4 +38,18 @@ resource "aws_route53_record" "tf-test-record" {
   type    = "A"
   ttl     = "300"
   records = [aws_eip.mh-eip.public_ip]
+}
+
+data "aws_key_pair" "kp" {
+  key_name = var.key_name
+  include_public_key = true
+}
+
+resource "aws_instance" "sujay-bastion-host" {
+  ami           = var.bh_ami
+  instance_type = var.bh_instance_type
+  key_name      = var.key_name
+  subnet_id     = var.public_subnet_id
+  security_groups = var.bh_security_groups
+  tags = var.bh_tags
 }
