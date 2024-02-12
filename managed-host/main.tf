@@ -40,11 +40,6 @@ resource "aws_route53_record" "tf-test-record" {
   records = [aws_eip.mh-eip.public_ip]
 }
 
-data "aws_key_pair" "kp" {
-  key_name = var.key_name
-  include_public_key = true
-}
-
 resource "aws_instance" "sujay-bastion-host" {
   ami           = var.bh_ami
   instance_type = var.bh_instance_type
