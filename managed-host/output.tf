@@ -2,14 +2,14 @@ output "mh-instance-id" {
   value = aws_instance.sujay-tf-mh.id
 }
 
-output "mh-instance-public-ip" {
-  value = aws_instance.sujay-tf-mh.public_ip
+output "bh-instance-id" {
+  value = aws_instance.sujay-bastion-host.id
 }
 
-output "mh-private-ip" {
-  value = aws_instance.sujay-tf-mh.private_ip
+output "mh-private-dns" {
+  value = aws_instance.sujay-tf-mh.private_dns
 }
 
-output "bh-public-ip" {
-  value = aws_instance.sujay-bastion-host.public_ip
+output "bh-public-dns" {
+  value = aws_instance.sujay-bastion-host.public_dns
 }
