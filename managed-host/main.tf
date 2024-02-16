@@ -2,8 +2,42 @@ provider "aws" {
   region = "us-east-1"
 }
 
-data "aws_iam_instance_profile" "eks-access" {
-  name = "haas-dev-test"
+resource "aws_iam_role_policy" "cxcluster-access-policy" {
+  name   = "cxcluster-access-policy"
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "eks:*"
+        ],
+        "Resource": "*"
+      }
+    ]
+  })
+  role   = aws_iam_role.cxcluster-k8s-access.id
+}
+
+resource "aws_iam_role" "cxcluster-k8s-access" {
+  name               = "cxcluster-k8s-access"
+  assume_role_policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": "sts:AssumeRole",
+        "Principal": {
+          "Service": "ec2.amazonaws.com"
+        },
+        "Effect": "Allow",
+      }
+    ]
+  })
+}
+
+resource "aws_iam_instance_profile" "cxcluster-access-profile" {
+  name = "cxcluster-access-profile"
+  role = aws_iam_role.cxcluster-k8s-access.name
 }
 
 resource "aws_instance" "sujay-tf-mh" {
@@ -13,7 +47,7 @@ resource "aws_instance" "sujay-tf-mh" {
   subnet_id     = var.private_subnet_id
   security_groups = var.mh_security_groups
   user_data = file("mh-userdata.yaml")
-  iam_instance_profile = data.aws_iam_instance_profile.eks-access.name
+  iam_instance_profile = aws_iam_instance_profile.cxcluster-access-profile.name
   tags = var.mh_tags
 }
 
